@@ -25,16 +25,19 @@ const LanguageSwitcher = ({
   const handleLanguageChange = (selectedLang: string) => {
     if (typeof window !== "undefined") {
       const baseUrl = window.location.origin;
-      let newPath = pathname.replace(`/${lang}`, ""); // 去除当前语言路径
-
+      
+      // 去除当前语言路径并确保保留 base 路径
+      let newPath = pathname.replace(`/${lang}`, ""); 
+      newPath = newPath.startsWith("/blogLinx") ? newPath : `/blogLinx${newPath}`;
+      
       if (selectedLang === default_language && !default_language_in_subdir) {
         // 对于默认语言且不在子目录时
         newPath = removeTrailingSlash(newPath);
       } else {
-        // 将语言代码放在 base 之后
-        newPath = `/blogLinx/${selectedLang}${removeTrailingSlash(newPath)}`;
+        // 将语言代码插入到 base 路径之后
+        newPath = `/blogLinx/${selectedLang}${removeTrailingSlash(newPath.replace("/blogLinx", ""))}`;
       }
-      
+
       window.location.href = `${baseUrl}${newPath}`;
     }
   };
