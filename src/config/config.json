@@ -2,7 +2,7 @@
   "site": {
     "title": "Astroplate",
     "base_url": "https://seven-odd.github.io",
-    "base_path": "/",
+    "base_path": "blogLinx",
     "trailing_slash": false,
     "favicon": "/images/favicon.png",
     "logo": "/images/logo.png",
