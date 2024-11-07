@@ -1,6 +1,6 @@
 import config from "@/config/config.json";
 import languages from "@/config/language.json";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 const LanguageSwitcher = ({
   lang,
@@ -10,6 +10,8 @@ const LanguageSwitcher = ({
   pathname: string;
 }) => {
   const { default_language, default_language_in_subdir } = config.settings;
+  
+  const [selectedLang, setSelectedLang] = useState(lang);
 
   // 移除尾随斜杠（如果不需要）
   const removeTrailingSlash = (path: string) => {
@@ -22,35 +24,40 @@ const LanguageSwitcher = ({
     .sort((a, b) => a.weight - b.weight);
 
   // 处理语言切换
-  const handleLanguageChange = (selectedLang: string) => {
+  const handleLanguageChange = (newLang: string) => {
     if (typeof window !== "undefined") {
       const baseUrl = window.location.origin;
       
+      // 更新当前选择的语言
+      setSelectedLang(newLang);
+
       // 去除当前语言路径并确保保留 base 路径
       let newPath = pathname.replace(`/${lang}`, ""); 
       newPath = newPath.startsWith("/blogLinx") ? newPath : `/blogLinx${newPath}`;
       
-      if (selectedLang === default_language && !default_language_in_subdir) {
+      if (newLang === default_language && !default_language_in_subdir) {
         // 对于默认语言且不在子目录时
         newPath = removeTrailingSlash(newPath);
       } else {
         // 将语言代码插入到 base 路径之后
-        newPath = `/blogLinx/${selectedLang}${removeTrailingSlash(newPath.replace("/blogLinx", ""))}`;
-        console.log(`${selectedLang}`,'1')
+        newPath = `/blogLinx/${newLang}${removeTrailingSlash(newPath.replace("/blogLinx", ""))}`;
       }
-
-      console.log(`${baseUrl}`,`${newPath}`,'2')
 
       window.location.href = `${baseUrl}${newPath}`;
     }
   };
+
+  useEffect(() => {
+    // 更新语言时重新设置下拉框的值
+    setSelectedLang(lang);
+  }, [lang]);
 
   return (
     <div className={`mr-5 ${sortedLanguages.length > 1 ? "block" : "hidden"}`}>
       <select
         className="border border-dark text-dark bg-transparent dark:border-darkmode-primary dark:text-white py-1 rounded-sm cursor-pointer focus:ring-0 focus:border-dark dark:focus:border-darkmode-primary"
         onChange={(e) => handleLanguageChange(e.target.value)}
-        value={lang}
+        value={selectedLang} // 确保下拉框绑定选中的语言
       >
         {sortedLanguages.map((language) => (
           <option
