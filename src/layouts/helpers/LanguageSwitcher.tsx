@@ -36,7 +36,10 @@ const LanguageSwitcher = ({
       } else {
         // 将语言代码插入到 base 路径之后
         newPath = `/blogLinx/${selectedLang}${removeTrailingSlash(newPath.replace("/blogLinx", ""))}`;
+        console.log(`${selectedLang}`,'1')
       }
+
+      console.log(`${baseUrl}`,`${newPath}`,'2')
 
       window.location.href = `${baseUrl}${newPath}`;
     }
