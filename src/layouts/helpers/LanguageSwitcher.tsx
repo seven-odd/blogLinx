@@ -11,41 +11,39 @@ const LanguageSwitcher = ({
 }) => {
   const { default_language, default_language_in_subdir } = config.settings;
 
-  // Function to remove trailing slash if necessary
+  // 移除尾随斜杠（如果不需要）
   const removeTrailingSlash = (path: string) => {
-    if (!config.site.trailing_slash) {
-      return path.replace(/\/$/, "");
-    }
-    return path;
+    return config.site.trailing_slash ? path : path.replace(/\/$/, "");
   };
 
-  // Sort languages by weight and filter out disabled languages
+  // 排序并过滤语言
   const sortedLanguages = languages
-    // @ts-ignore
-    .filter(language => !config.settings.disable_languages.includes(language.languageCode))
+    .filter((language) => !config.settings.disable_languages.includes(language.languageCode))
     .sort((a, b) => a.weight - b.weight);
+
+  // 处理语言切换
+  const handleLanguageChange = (selectedLang: string) => {
+    if (typeof window !== "undefined") {
+      const baseUrl = window.location.origin;
+      let newPath = pathname.replace(`/${lang}`, ""); // 去除当前语言路径
+
+      if (selectedLang === default_language && !default_language_in_subdir) {
+        // 对于默认语言且不在子目录时
+        newPath = removeTrailingSlash(newPath);
+      } else {
+        // 将语言代码放在 base 之后
+        newPath = `/blogLinx/${selectedLang}${removeTrailingSlash(newPath)}`;
+      }
+      
+      window.location.href = `${baseUrl}${newPath}`;
+    }
+  };
 
   return (
     <div className={`mr-5 ${sortedLanguages.length > 1 ? "block" : "hidden"}`}>
       <select
         className="border border-dark text-dark bg-transparent dark:border-darkmode-primary dark:text-white py-1 rounded-sm cursor-pointer focus:ring-0 focus:border-dark dark:focus:border-darkmode-primary"
-        onChange={(e) => {
-          const selectedLang = e.target.value;
-          let newPath;
-          const baseUrl = window.location.origin;
-
-          if (selectedLang === default_language) {
-            if (default_language_in_subdir) {
-              newPath = `${baseUrl}/${default_language}${removeTrailingSlash(pathname.replace(`/${lang}`, ""))}`;
-            } else {
-              newPath = `${baseUrl}${removeTrailingSlash(pathname.replace(`/${lang}`, ""))}`;
-            }
-          } else {
-            newPath = `/${selectedLang}${removeTrailingSlash(pathname.replace(`/${lang}`, ""))}`;
-          }
-
-          window.location.href = newPath;
-        }}
+        onChange={(e) => handleLanguageChange(e.target.value)}
         value={lang}
       >
         {sortedLanguages.map((language) => (
