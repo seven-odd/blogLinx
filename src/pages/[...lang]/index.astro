@@ -9,7 +9,8 @@ import Testimonial from "@/partials/Testimonial.astro";
 import type { Feature } from "@/types";
 import type { ContentEntryMap } from "astro:content";
 import { FaCheck } from "react-icons/fa";
-
+import config from "@/config/config.json";
+import languagesJSON from "@/config/language.json";
 export function getStaticPaths() {
   const paths = supportedLang.map((lang) => ({
     params: { lang: lang || undefined },
@@ -32,6 +33,25 @@ const call_to_action = await getSinglePage(
   lang as keyof ContentEntryMap,
   "call-to-action"
 );
+
+const { default_language } = config.settings;
+
+const supportedLang = [...languagesJSON.map((lang) => lang.languageCode)];
+const disabledLanguages = config.settings.disable_languages;
+
+// Filter out disabled languages from supportedLang
+const supportedLocales = supportedLang.filter(
+  (lang) => !disabledLanguages.includes(lang),
+);
+
+const base = "/blogLinx";
+
+if (typeof window !== "undefined") {
+  const userLanguage = navigator.language.slice(0, 2);
+  const selectedLocale = supportedLocales.includes(userLanguage) ? userLanguage : disabledLanguages;
+  window.location.href = `${selectedLocale}/${base}/`;
+}
+
 ---
 
 <Base>

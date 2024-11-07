@@ -21,8 +21,8 @@ const filteredSupportedLang = supportedLang.filter(
 // https://astro.build/config
 export default defineConfig({
   site:"https://seven-odd.github.io",
-  base:  "fr/blogLinx",
-  trailingSlash: config.site.trailing_slash ? "always" : "ignore",
+  base:  "blogLinx",
+  trailingSlash:"ignore",
   i18n: {
     locales: filteredSupportedLang,
     defaultLocale: default_language,
