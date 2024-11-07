@@ -34,21 +34,13 @@ const call_to_action = await getSinglePage(
   "call-to-action"
 );
 
-const { default_language } = config.settings;
-
-const supportedLang = [...languagesJSON.map((lang) => lang.languageCode)];
-const disabledLanguages = config.settings.disable_languages;
-
-// Filter out disabled languages from supportedLang
-const supportedLocales = supportedLang.filter(
-  (lang) => !disabledLanguages.includes(lang),
-);
-
+const defaultLocale = "en";
+const supportedLocales = ["en", "fr"];
 const base = "/blogLinx";
 
 if (typeof window !== "undefined") {
   const userLanguage = navigator.language.slice(0, 2);
-  const selectedLocale = supportedLocales.includes(userLanguage) ? userLanguage : disabledLanguages;
+  const selectedLocale = supportedLocales.includes(userLanguage) ? userLanguage : defaultLocale;
   window.location.href = `${selectedLocale}/${base}/`;
 }
 
